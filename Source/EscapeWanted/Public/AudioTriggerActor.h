@@ -14,11 +14,10 @@ class ESCAPEWANTED_API AAudioTriggerActor : public AActor
     
 public:    
 	AAudioTriggerActor();
-
-protected:
-	// .cpp에서 BeginPlay를 정의했다면 여기서 선언이 필요합니다.
 	virtual void BeginPlay() override;
 
+protected:
+	// 기존 변수들
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* TriggerBox;
 
@@ -27,6 +26,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Audio Settings")
 	FString ServerIP = TEXT("172.16.15.134:8000");
+
+	// --- [추가된 변수] ---
+	// 0.0이면 무음, 1.0이 기본값, 그 이상은 소리를 증폭시킵니다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio Settings", meta = (ClampMin = "0.0", ClampMax = "2.0"))
+	float VolumeMultiplier = 1.0f;
+	// ---------------------
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
