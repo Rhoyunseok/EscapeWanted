@@ -63,31 +63,26 @@ void AAudioTriggerActor::OnAudioReceived(FHttpRequestPtr Request, FHttpResponseP
         TArray<uint8> RawData = Response->GetContent();
         if (RawData.Num() < 44) return;
 
-        // 1. WAV 헤더 분석
         FWavHeader* Header = (FWavHeader*)RawData.GetData();
 
-        // 2. 사운드 객체 생성
         USoundWaveProcedural* SoundWave = NewObject<USoundWaveProcedural>(this);
         
-        // --- [수정된 부분] ---
-        // 일반 사운드 웨이브를 방금 만든 '우회 클래스'로 잠시 형변환하여 
-        // 꽁꽁 숨겨진 변수들을 강제로 세팅합니다.
         USoundWaveProceduralEx* SoundWaveEx = static_cast<USoundWaveProceduralEx*>(SoundWave);
         if (SoundWaveEx)
         {
             SoundWaveEx->SetAudioParams(Header->SampleRate, Header->NumChannels);
         }
-        // ---------------------
 
         int32 PCMDataSize = RawData.Num() - 44;
         SoundWave->Duration = (float)PCMDataSize / (Header->SampleRate * Header->NumChannels * (Header->BitsPerSample / 8));
 
-        // 3. 버퍼에 데이터 밀어넣기
         SoundWave->QueueAudio(RawData.GetData() + 44, PCMDataSize);
 
-        // 4. 재생
-        UGameplayStatics::PlaySound2D(this, SoundWave);
+        // --- [수정된 부분] ---
+        // 세 번째 인자에 VolumeMultiplier를 전달하여 소리 크기를 조절합니다.
+        UGameplayStatics::PlaySound2D(this, SoundWave, VolumeMultiplier);
+        // ---------------------
 
-        UE_LOG(LogTemp, Warning, TEXT("플러그인 없이 실시간 재생 성공! (샘플레이트: %d)"), Header->SampleRate);
+        UE_LOG(LogTemp, Warning, TEXT("서버 음성 재생 성공! 볼륨: %f"), VolumeMultiplier);
     }
 }
