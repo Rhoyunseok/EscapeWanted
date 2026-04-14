@@ -18,7 +18,7 @@ public class EscapeWanted : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate", "HTTP", "Json", "JsonUtilities", "Networking", "Sockets"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
